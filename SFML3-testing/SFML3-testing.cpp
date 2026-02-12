@@ -45,7 +45,7 @@ int main()
 	std::mt19937 gen(random());
 	std::uniform_int_distribution<> dist(lower_bound, upper_bound);
 
-	
+	bool removeCollision = false;
 
 	while (window.isOpen())
 	{
@@ -57,6 +57,12 @@ int main()
 		sf::Vector2 prevPos = player2.getPosition();
 		sf::Vector2f pos = player2.getPosition();
 
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R))
+		{
+			removeCollision = !removeCollision;
+				
+		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::H))
 		{
 			writeCommands();
@@ -89,25 +95,28 @@ int main()
 		if (pos.y > 800) player2.setPosition({ pos.x,0 });
 		
 
-
-		if (player2.getGlobalBounds().findIntersection(block.getGlobalBounds())) {
-			std::cout << "Collision detected!" << std::endl;
-			player2.setPosition(prevPos);
-			block.setFillColor(sf::Color::Red);
-		}
-		else
+		if (removeCollision)
 		{
-			block.setFillColor(sf::Color::Green);
+			if (player2.getGlobalBounds().findIntersection(block.getGlobalBounds())) {
+				std::cout << "Collision detected!" << std::endl;
+				player2.setPosition(prevPos);
+				block.setFillColor(sf::Color::Red);
+			}
+			else
+			{
+				block.setFillColor(sf::Color::Green);
+			}
+			if (player2.getGlobalBounds().findIntersection(block2.getGlobalBounds())) {
+				player2.setPosition(prevPos);
+				std::cout << "Collision detected!" << std::endl;
+				block2.setFillColor(sf::Color::Red);
+			}
+			else
+			{
+				block2.setFillColor(sf::Color::Green);
+			}
 		}
-		if (player2.getGlobalBounds().findIntersection(block2.getGlobalBounds())) {
-			player2.setPosition(prevPos);
-			std::cout << "Collision detected!" << std::endl;
-			block2.setFillColor(sf::Color::Red);
-		}
-		else
-		{
-			block2.setFillColor(sf::Color::Green);
-		}
+		
 
 		// collision with collecatble
 		if (player2.getGlobalBounds().findIntersection(collectable.getGlobalBounds())) {
@@ -116,6 +125,8 @@ int main()
 
 			std::cout << "Collected! Moving to: x=" << newX << ", y=" << newY << std::endl;
 			collectable.setPosition({ newX, newY });
+			player2.setRadius(player2.getRadius() + 5); // Increase player size as a simple effect
+
 		}
 
 
